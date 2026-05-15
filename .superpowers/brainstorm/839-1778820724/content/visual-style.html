@@ -1,0 +1,128 @@
+<h2>你更喜欢哪种「可爱治愈」风格？</h2>
+<p class="subtitle">选择一个视觉方向，这将决定整个产品的配色、图标和氛围</p>
+
+<div class="cards" data-multiselect>
+  <div class="card" data-choice="pastel" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background: linear-gradient(135deg, #fce4ec, #f3e5f5, #e8eaf6); padding: 30px 20px; border-radius: 12px; text-align: center; min-height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div style="font-size: 48px; margin-bottom: 10px;">🌸</div>
+        <div style="background: #fff; border-radius: 20px; padding: 12px 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); width: 80%;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            <div style="width: 16px; height: 16px; border-radius: 50%; border: 2px solid #f48fb1;"></div>
+            <span style="font-size: 12px; color: #555;">晨间冥想 10分钟</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            <div style="width: 16px; height: 16px; border-radius: 50%; background: #ce93d8; border: 2px solid #ce93d8;"></div>
+            <span style="font-size: 12px; color: #555; text-decoration: line-through;">阅读 30 分钟</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 16px; height: 16px; border-radius: 50%; border: 2px solid #90caf9;"></div>
+            <span style="font-size: 12px; color: #555;">喝水 8 杯</span>
+          </div>
+        </div>
+        <div style="margin-top: 8px; display: flex; gap: 6px;">
+          <div style="width: 20px; height: 6px; border-radius: 3px; background: #f48fb1;"></div>
+          <div style="width: 20px; height: 6px; border-radius: 3px; background: #ce93d8;"></div>
+          <div style="width: 20px; height: 6px; border-radius: 3px; background: #90caf9;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>柔和马卡龙</h3>
+      <p>粉紫蓝色调，大量圆角，柔软蓬松的视觉感受。像棉花糖一样温柔。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="cartoon" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background: linear-gradient(135deg, #fff9c4, #ffecb3, #ffe0b2); padding: 30px 20px; border-radius: 12px; text-align: center; min-height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div style="font-size: 48px; margin-bottom: 10px;">🐻</div>
+        <div style="background: #fff; border-radius: 16px; border: 3px solid #ffcc80; padding: 12px 24px; box-shadow: 3px 3px 0 #ffcc80; width: 80%;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            <span style="font-size: 18px;">⭐</span>
+            <span style="font-size: 12px; font-weight: bold; color: #555;">晨间冥想 10分钟</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            <span style="font-size: 18px;">✅</span>
+            <span style="font-size: 12px; color: #999; text-decoration: line-through;">阅读 30 分钟</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 18px;">⭐</span>
+            <span style="font-size: 12px; font-weight: bold; color: #555;">喝水 8 杯</span>
+          </div>
+        </div>
+        <div style="margin-top: 8px; font-size: 14px; color: #ff9800;">🔥 连续打卡 7 天！</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>手绘涂鸦风</h3>
+      <p>暖黄橙色系，手绘边框和涂鸦表情，像在可爱的笔记本上打卡。活泼有趣。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="nature" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background: linear-gradient(135deg, #e8f5e9, #f1f8e9, #e0f2f1); padding: 30px 20px; border-radius: 12px; text-align: center; min-height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div style="font-size: 48px; margin-bottom: 10px;">🌿</div>
+        <div style="background: rgba(255,255,255,0.9); border-radius: 20px; padding: 12px 24px; box-shadow: 0 2px 16px rgba(76,175,80,0.1); width: 80%;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            <div style="width: 20px; height: 20px; border-radius: 50%; background: #a5d6a7; display: flex; align-items: center; justify-content: center; font-size: 12px;">🌱</div>
+            <span style="font-size: 12px; color: #555;">晨间冥想 10分钟</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            <div style="width: 20px; height: 20px; border-radius: 50%; background: #c8e6c9; display: flex; align-items: center; justify-content: center; font-size: 12px;">🌸</div>
+            <span style="font-size: 12px; color: #555;">阅读 30 分钟</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 20px; height: 20px; border-radius: 50%; background: #a5d6a7; display: flex; align-items: center; justify-content: center; font-size: 12px;">🌱</div>
+            <span style="font-size: 12px; color: #555;">喝水 8 杯</span>
+          </div>
+        </div>
+        <div style="margin-top: 8px; display: flex; gap: 4px; align-items: center;">
+          <span style="font-size: 14px;">🌳</span>
+          <div style="width: 60px; height: 8px; background: #c8e6c9; border-radius: 4px; overflow: hidden;">
+            <div style="width: 60%; height: 100%; background: #66bb6a; border-radius: 4px;"></div>
+          </div>
+          <span style="font-size: 11px; color: #388e3c;">60%</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>自然花园风</h3>
+      <p>清新绿意，植物与花朵元素。打卡就像种小树苗慢慢成长。宁静治愈。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="dreamy" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background: linear-gradient(135deg, #e1bee7, #d1c4e9, #b3e5fc); padding: 30px 20px; border-radius: 12px; text-align: center; min-height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div style="font-size: 48px; margin-bottom: 10px;">🌙</div>
+        <div style="background: rgba(255,255,255,0.85); border-radius: 24px; padding: 12px 24px; box-shadow: 0 4px 20px rgba(156,39,176,0.12); width: 80%;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            <div style="width: 8px; height: 8px; border-radius: 50%; background: #ba68c8; box-shadow: 0 0 8px #ba68c8;"></div>
+            <span style="font-size: 12px; color: #555;">晨间冥想 10分钟</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            <div style="width: 8px; height: 8px; border-radius: 50%; background: #e0e0e0;"></div>
+            <span style="font-size: 12px; color: #bbb; text-decoration: line-through;">阅读 30 分钟</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 8px; height: 8px; border-radius: 50%; background: #64b5f6; box-shadow: 0 0 8px #64b5f6;"></div>
+            <span style="font-size: 12px; color: #555;">喝水 8 杯</span>
+          </div>
+        </div>
+        <div style="margin-top: 8px; display: flex; gap: 6px;">
+          <div style="width: 28px; height: 28px; border-radius: 50%; background: #ce93d8; opacity: 0.6;"></div>
+          <div style="width: 28px; height: 28px; border-radius: 50%; background: #ce93d8; opacity: 0.8;"></div>
+          <div style="width: 28px; height: 28px; border-radius: 50%; background: #ce93d8;"></div>
+          <div style="width: 28px; height: 28px; border-radius: 50%; border: 2px dashed #ce93d8;"></div>
+          <div style="width: 28px; height: 28px; border-radius: 50%; border: 2px dashed #ce93d8;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>梦幻星空风</h3>
+      <p>紫蓝渐变，发光元素，星星与月亮。像在星空下许愿打卡。浪漫梦幻。</p>
+    </div>
+  </div>
+</div>
