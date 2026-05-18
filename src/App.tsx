@@ -3,6 +3,7 @@ import Home from "@/pages/Home";
 import Tasks from "@/pages/Tasks";
 import Reports from "@/pages/Reports";
 import BottomNav from "@/components/BottomNav";
+import InstallPrompt from "@/components/InstallPrompt";
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
           </Routes>
         </div>
         <BottomNav />
+        <InstallPrompt />
       </div>
     </Router>
   );
