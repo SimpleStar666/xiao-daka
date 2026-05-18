@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Flame } from 'lucide-react';
+import { Plus, Flame, MonitorDown, X } from 'lucide-react';
 import { useCheckinStore } from '@/stores/checkinStore';
 import { getStreak, getTotalCheckins, computeBadges, sendNotification } from '@/utils/reports';
 import GreetingCard from '@/components/GreetingCard';
@@ -13,6 +13,62 @@ import DailyQuote from '@/components/DailyQuote';
 import BadgeList from '@/components/BadgeList';
 import DataManageModal from '@/components/DataManageModal';
 import HistoryCalendar from '@/components/HistoryCalendar';
+
+function InstallBanner() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+      || (window.navigator as unknown as { standalone?: boolean }).standalone === true;
+    if (isStandalone) return;
+
+    const ua = navigator.userAgent.toLowerCase();
+    const isMobile = /iphone|ipad|ipod|android/.test(ua);
+
+    if (isMobile) {
+      setVisible(true);
+    }
+  }, []);
+
+  if (!visible) return null;
+
+  const ua2 = navigator.userAgent.toLowerCase();
+  const isAndroid2 = /android/.test(ua2);
+
+  const handleClick = () => {
+    const msg = isAndroid2
+      ? '📲 点击浏览器右上角菜单 ⋮\n→ 选择「安装应用」或「添加到主屏幕」'
+      : '📲 点击浏览器底部 ⬆️ 分享按钮\n→ 找到「添加到主屏幕」\n→ 点击「添加」';
+    alert(msg);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-gradient-to-r from-[#FFB5C2] to-[#FF8FA3] rounded-2xl px-4 py-3 mb-4 flex items-center justify-between text-white shadow-lg"
+    >
+      <div className="flex items-center gap-2">
+        <MonitorDown size={18} />
+        <span className="text-sm font-medium">安装到手机桌面，像App一样使用！</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={handleClick}
+          className="px-3 py-1.5 bg-white text-pink-500 rounded-lg text-xs font-bold hover:bg-pink-50 transition-colors active:scale-95"
+        >
+          如何安装
+        </button>
+        <button
+          onClick={() => setVisible(false)}
+          className="p-1 hover:bg-white/20 rounded-full transition-colors"
+        >
+          <X size={16} />
+        </button>
+      </div>
+    </motion.div>
+  );
+}
 
 export default function Dashboard() {
   const { tasks, records, loadAll, getTodayCompletion, settings, setShowReport } = useCheckinStore();
@@ -77,6 +133,8 @@ export default function Dashboard() {
         <GreetingCard />
         <SettingsModal />
       </div>
+
+      <InstallBanner />
 
       <div className="grid grid-cols-3 gap-3 mb-5">
         <div className="col-span-1 flex justify-center">
