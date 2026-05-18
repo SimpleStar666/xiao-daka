@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -14,7 +14,6 @@ export default function InstallPrompt() {
   useEffect(() => {
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches
       || (window.navigator as unknown as { standalone?: boolean }).standalone === true;
-
     if (isStandalone) return;
 
     const handler = (e: Event) => {
@@ -31,21 +30,27 @@ export default function InstallPrompt() {
     };
   }, []);
 
-  const handleInstall = async () => {
+  const doNativeInstall = useCallback(() => {
     if (deferredPrompt) {
-      await deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        setShowPrompt(false);
-        return;
-      }
+      deferredPrompt.prompt().then(() => {
+        return deferredPrompt.userChoice;
+      }).then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          setShowPrompt(false);
+          setShowGuide(false);
+        }
+      }).catch(() => {});
     }
-    setShowGuide(true);
-  };
+  }, [deferredPrompt]);
 
-  const handleDismiss = () => {
+  const openGuide = useCallback(() => {
+    setShowGuide(true);
+  }, []);
+
+  const handleDismiss = useCallback(() => {
     setShowPrompt(false);
-  };
+    setShowGuide(false);
+  }, []);
 
   if (!showPrompt) return null;
 
@@ -59,6 +64,7 @@ export default function InstallPrompt() {
         initial={{ opacity: 0, y: 60 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 60 }}
+        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         className="fixed bottom-20 left-4 right-4 max-w-lg mx-auto z-50"
       >
         <div className="bg-white rounded-2xl shadow-xl border border-pink-100 p-5">
@@ -69,12 +75,6 @@ export default function InstallPrompt() {
                 <h3 className="text-base font-bold text-gray-800 mt-2">安装指南</h3>
               </div>
               <div className="bg-pink-50 rounded-xl p-3 text-sm text-gray-600 space-y-2">
-                {isAndroid && (
-                  <>
-                    <p>1️⃣ 点击浏览器右上角菜单 <span className="font-bold">⋮</span></p>
-                    <p>2️⃣ 选择 <span className="font-bold">「安装应用」</span>或<span className="font-bold">「添加到主屏幕」</span></p>
-                  </>
-                )}
                 {isIOS && (
                   <>
                     <p>1️⃣ 点击底部 <span className="font-bold">⬆️ 分享按钮</span></p>
@@ -82,10 +82,15 @@ export default function InstallPrompt() {
                     <p>3️⃣ 点击右上角 <span className="font-bold">「添加」</span></p>
                   </>
                 )}
+                {isAndroid && (
+                  <>
+                    <p>1️⃣ 点击浏览器右上角菜单 <span className="font-bold">⋮</span></p>
+                    <p>2️⃣ 选择 <span className="font-bold">「安装应用」</span>或<span className="font-bold">「添加到主屏幕」</span></p>
+                  </>
+                )}
                 {!isIOS && !isAndroid && (
                   <>
-                    <p>💻 电脑端也可安装为桌面应用：</p>
-                    <p>1️⃣ 点击浏览器地址栏右侧的 <span className="font-bold">安装图标</span></p>
+                    <p>1️⃣ 点击浏览器地址栏右侧的 <span className="font-bold">安装图标</span> ⊕</p>
                     <p>2️⃣ 或点击浏览器菜单 → <span className="font-bold">「安装小打卡」</span></p>
                   </>
                 )}
@@ -117,12 +122,21 @@ export default function InstallPrompt() {
                 >
                   暂不需要
                 </button>
-                <button
-                  onClick={handleInstall}
-                  className="flex-1 py-2.5 text-sm text-white font-medium rounded-xl bg-gradient-to-r from-[#FFB5C2] to-[#FF8FA3] hover:shadow-lg transition-all active:scale-95"
-                >
-                  立即安装 ✨
-                </button>
+                {deferredPrompt ? (
+                  <button
+                    onClick={doNativeInstall}
+                    className="flex-1 py-2.5 text-sm text-white font-medium rounded-xl bg-gradient-to-r from-[#FFB5C2] to-[#FF8FA3] hover:shadow-lg transition-all active:scale-95"
+                  >
+                    一键安装 ✨
+                  </button>
+                ) : (
+                  <button
+                    onClick={openGuide}
+                    className="flex-1 py-2.5 text-sm text-white font-medium rounded-xl bg-gradient-to-r from-[#FFB5C2] to-[#FF8FA3] hover:shadow-lg transition-all active:scale-95"
+                  >
+                    如何安装 📲
+                  </button>
+                )}
               </div>
             </>
           )}
