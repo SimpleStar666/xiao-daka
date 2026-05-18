@@ -6,10 +6,11 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
+const APK_URL = 'https://github.com/SimpleStar666/xiao-daka/releases/download/android-latest/app-debug.apk';
+
 function detectBrowser() {
   const ua = navigator.userAgent;
   const uaLower = ua.toLowerCase();
-
   if (/MicroMessenger/i.test(ua)) return 'wechat';
   if (/(QQ|MQQBrowser)\//i.test(ua)) return 'qq';
   if (/UCBrowser|UBrowser/i.test(ua)) return 'uc';
@@ -22,10 +23,15 @@ function detectBrowser() {
   return 'other';
 }
 
+function isPWAAble(b: string) {
+  return b === 'chrome' || b === 'edge' || b === 'safari_ios';
+}
+
 export default function InstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
+  const [downloaded, setDownloaded] = useState(false);
 
   const browser = useMemo(() => detectBrowser(), []);
   const isIOS = useMemo(() => /iphone|ipad|ipod/i.test(navigator.userAgent), []);
@@ -68,6 +74,8 @@ export default function InstallPrompt() {
 
   if (!showPrompt) return null;
 
+  const pwaAble = browser === 'safari_ios' ? true : isPWAAble(browser);
+
   return (
     <AnimatePresence>
       <motion.div
@@ -79,14 +87,26 @@ export default function InstallPrompt() {
       >
         <div className="bg-white rounded-2xl shadow-xl border border-pink-100 p-5">
           {showGuide ? (
-            <GuidePanel browser={browser} isIOS={isIOS} onDismiss={handleDismiss} />
+            <GuidePanel
+              browser={browser}
+              isIOS={isIOS}
+              pwaAble={pwaAble || !!deferredPrompt}
+              apkUrl={APK_URL}
+              onDismiss={handleDismiss}
+              downloaded={downloaded}
+              setDownloaded={setDownloaded}
+            />
           ) : (
             <PromptButtons
               hasNative={!!deferredPrompt}
               browser={browser}
+              pwaAble={pwaAble}
+              apkUrl={APK_URL}
               onNativeInstall={doNativeInstall}
               onGuide={openGuide}
               onDismiss={handleDismiss}
+              downloaded={downloaded}
+              setDownloaded={setDownloaded}
             />
           )}
         </div>
@@ -96,11 +116,19 @@ export default function InstallPrompt() {
 }
 
 function PromptButtons({
-  hasNative, browser, onNativeInstall, onGuide, onDismiss,
+  hasNative, browser, pwaAble, apkUrl, onNativeInstall, onGuide, onDismiss, downloaded, setDownloaded,
 }: {
-  hasNative: boolean; browser: string; onNativeInstall: () => void; onGuide: () => void; onDismiss: () => void;
+  hasNative: boolean; browser: string; pwaAble: boolean; apkUrl: string;
+  onNativeInstall: () => void; onGuide: () => void; onDismiss: () => void;
+  downloaded: boolean; setDownloaded: (v: boolean) => void;
 }) {
   const isWechat = browser === 'wechat';
+  const canPwa = hasNative || (pwaAble && browser !== 'wechat');
+
+  const handleApkDownload = () => {
+    setDownloaded(true);
+    window.open(apkUrl, '_blank');
+  };
 
   return (
     <>
@@ -110,47 +138,81 @@ function PromptButtons({
         </div>
         <div>
           <h3 className="text-base font-bold text-gray-800">
-            {isWechat ? '请用浏览器打开' : '添加到主屏幕'}
+            {isWechat ? '请用浏览器打开' : '安装小打卡'}
           </h3>
           <p className="text-sm text-gray-500 mt-1">
-            {isWechat
-              ? '微信不支持安装，用浏览器打开即可安装'
-              : '安装到桌面，随时随地打开打卡！'}
+            {isWechat ? '微信不支持安装，点右上角···→在浏览器打开' : '一键下载安装包，到桌面随时打卡'}
           </p>
         </div>
       </div>
-      <div className="flex gap-3">
+
+      <div className="space-y-2">
+        {canPwa ? (
+          <button
+            onClick={onNativeInstall}
+            className="w-full py-3 text-sm text-white font-medium rounded-xl bg-gradient-to-r from-[#FFB5C2] to-[#FF8FA3] hover:shadow-lg transition-all active:scale-95"
+          >
+            {hasNative ? '✨ 一键添加到桌面' : '📲 查看安装步骤'}
+          </button>
+        ) : (
+          <>
+            <a
+              href={apkUrl}
+              onClick={handleApkDownload}
+              className="block w-full py-3 text-sm text-white font-medium rounded-xl bg-gradient-to-r from-[#FFB5C2] to-[#FF8FA3] hover:shadow-lg transition-all active:scale-95 text-center"
+            >
+              📦 点击下载 APK 安装包
+            </a>
+            <p className="text-xs text-center text-gray-400">
+              {downloaded ? '⏳ 下载中...安装时请允许「未知来源」' : '安装时请允许「安装未知来源应用」'}
+            </p>
+          </>
+        )}
+
+        {!isWechat && !canPwa && (
+          <button
+            onClick={onGuide}
+            className="w-full py-2.5 text-sm text-gray-400 hover:text-gray-600 rounded-xl border border-gray-100 transition-colors"
+          >
+            查看其他安装方式
+          </button>
+        )}
+
         <button
           onClick={onDismiss}
-          className="flex-1 py-2.5 text-sm text-gray-400 hover:text-gray-600 rounded-xl border border-gray-100 transition-colors"
+          className="w-full py-2 text-xs text-gray-300 hover:text-gray-500 transition-colors"
         >
           暂不需要
         </button>
-        {hasNative ? (
-          <button
-            onClick={onNativeInstall}
-            className="flex-1 py-2.5 text-sm text-white font-medium rounded-xl bg-gradient-to-r from-[#FFB5C2] to-[#FF8FA3] hover:shadow-lg transition-all active:scale-95"
-          >
-            一键安装 ✨
-          </button>
-        ) : (
-          <button
-            onClick={onGuide}
-            className="flex-1 py-2.5 text-sm text-white font-medium rounded-xl bg-gradient-to-r from-[#FFB5C2] to-[#FF8FA3] hover:shadow-lg transition-all active:scale-95"
-          >
-            {isWechat ? '切换浏览器 👉' : '如何安装 📲'}
-          </button>
-        )}
       </div>
+
+      {canPwa && browser !== 'wechat' && (
+        <div className="mt-3 pt-3 border-t border-gray-50">
+          <p className="text-xs text-gray-400 text-center mb-2">或者直接下载 APK</p>
+          <a
+            href={apkUrl}
+            onClick={handleApkDownload}
+            className="block w-full py-2.5 text-sm text-pink-400 font-medium rounded-xl border border-pink-100 hover:bg-pink-50 transition-colors active:bg-pink-100 text-center"
+          >
+            📦 下载 APK 安装包
+          </a>
+        </div>
+      )}
     </>
   );
 }
 
 function GuidePanel({
-  browser, isIOS, onDismiss,
+  browser, isIOS, pwaAble, apkUrl, onDismiss, downloaded, setDownloaded,
 }: {
-  browser: string; isIOS: boolean; onDismiss: () => void;
+  browser: string; isIOS: boolean; pwaAble: boolean; apkUrl: string; onDismiss: () => void;
+  downloaded: boolean; setDownloaded: (v: boolean) => void;
 }) {
+  const handleApkDownload = () => {
+    setDownloaded(true);
+    window.open(apkUrl, '_blank');
+  };
+
   return (
     <>
       <div className="text-center mb-3">
@@ -158,75 +220,47 @@ function GuidePanel({
         <h3 className="text-base font-bold text-gray-800 mt-2">安装指南</h3>
       </div>
 
+      {(browser === 'wechat' || browser === 'qq' || browser === 'uc' || browser === 'baidu' || (!pwaAble && !isIOS)) && (
+        <div className="bg-orange-50 rounded-xl p-3 text-sm space-y-2 mb-3 border border-orange-100">
+          <p className="text-orange-600 font-medium">📦 推荐：直接下载 APK</p>
+          <p className="text-gray-500 text-xs">最方便！下载后点击安装即可使用</p>
+          <a
+            href={apkUrl}
+            onClick={handleApkDownload}
+            className="block w-full py-2.5 text-sm text-white font-medium rounded-xl bg-gradient-to-r from-[#FFB5C2] to-[#FF8FA3] hover:shadow-lg transition-all active:scale-95 text-center"
+          >
+            下载 APK 安装包 📥
+          </a>
+          {downloaded && (
+            <p className="text-xs text-gray-400 text-center">请允许「安装未知来源应用」，然后点击安装</p>
+          )}
+        </div>
+      )}
+
       {browser === 'wechat' && (
         <div className="bg-pink-50 rounded-xl p-3 text-sm text-gray-600 space-y-2">
           <p className="text-pink-600 font-medium">⚠️ 微信内无法安装</p>
-          <p>请点击右上角 <span className="font-bold">「···」</span> 按钮</p>
-          <p>选择 <span className="font-bold">「在浏览器中打开」</span></p>
-          <p className="text-xs text-gray-400 mt-1">
-            推荐使用 Chrome 浏览器或手机自带浏览器打开，即可安装
-          </p>
-        </div>
-      )}
-
-      {browser === 'qq' && (
-        <div className="bg-pink-50 rounded-xl p-3 text-sm text-gray-600 space-y-2">
-          <p className="text-pink-600 font-medium">QQ浏览器可能不支持安装</p>
-          <p>建议复制网址，用 <span className="font-bold">Chrome 浏览器</span> 或<span className="font-bold">手机自带浏览器</span>打开</p>
-          <p>网址：<span className="text-xs text-pink-500 break-all">simplestar666.github.io/xiao-daka/</span></p>
-        </div>
-      )}
-
-      {browser === 'uc' && (
-        <div className="bg-pink-50 rounded-xl p-3 text-sm text-gray-600 space-y-2">
-          <p className="text-pink-600 font-medium">UC浏览器可能不支持安装</p>
-          <p>建议复制网址，用 <span className="font-bold">Chrome 浏览器</span> 或<span className="font-bold">手机自带浏览器</span>打开</p>
-          <p>网址：<span className="text-xs text-pink-500 break-all">simplestar666.github.io/xiao-daka/</span></p>
-        </div>
-      )}
-
-      {browser === 'baidu' && (
-        <div className="bg-pink-50 rounded-xl p-3 text-sm text-gray-600 space-y-2">
-          <p className="text-pink-600 font-medium">百度浏览器可能不支持安装</p>
-          <p>建议复制网址，用 <span className="font-bold">Chrome 浏览器</span> 或<span className="font-bold">手机自带浏览器</span>打开</p>
-          <p>网址：<span className="text-xs text-pink-500 break-all">simplestar666.github.io/xiao-daka/</span></p>
+          <p>请点击右上角 <span className="font-bold">「···」</span> → <span className="font-bold">「在浏览器中打开」</span></p>
+          <p className="text-xs text-gray-400">打开后即可用浏览器安装或下载 APK</p>
         </div>
       )}
 
       {browser === 'chrome' && (
         <div className="bg-pink-50 rounded-xl p-3 text-sm text-gray-600 space-y-2">
-          <p className="text-green-600 font-medium">✅ Chrome 完全支持！</p>
+          <p className="text-green-600 font-medium">✅ Chrome 支持 PWA！</p>
           <p className="font-bold">方式一（推荐）：</p>
-          <p>地址栏右侧有一个 <span className="font-bold">⊕ 安装图标</span>，点击即可安装</p>
+          <p>地址栏右侧 <span className="font-bold">⊕ 安装图标</span>，点击即可安装</p>
           <p className="font-bold mt-1">方式二：</p>
-          <p>点击右上角 <span className="font-bold">⋮ 菜单</span> → <span className="font-bold">「安装应用」</span></p>
+          <p>右上角 <span className="font-bold">⋮ 菜单</span> → <span className="font-bold">「安装应用」</span></p>
         </div>
       )}
 
-      {browser === 'edge' && (
+      {(browser === 'safari_ios' || browser === 'chrome_ios' || (isIOS && !pwaAble)) && (
         <div className="bg-pink-50 rounded-xl p-3 text-sm text-gray-600 space-y-2">
-          <p className="text-green-600 font-medium">✅ Edge 完全支持！</p>
-          <p>点击底部菜单 <span className="font-bold">「···」</span> → <span className="font-bold">「添加到手机」</span>或<span className="font-bold">「添加到主屏幕」</span></p>
-        </div>
-      )}
-
-      {(browser === 'safari_ios' || browser === 'chrome_ios' || (isIOS && browser === 'other')) && (
-        <div className="bg-pink-50 rounded-xl p-3 text-sm text-gray-600 space-y-2">
-          <p className="text-green-600 font-medium">✅ Safari 完全支持！</p>
-          <p>1️⃣ 点击底部正中间 <span className="font-bold">⬆️ 分享按钮</span></p>
-          <p>2️⃣ 在弹出菜单中向下滑动</p>
-          <p>3️⃣ 找到 <span className="font-bold">「添加到主屏幕」</span></p>
-          <p>4️⃣ 点击右上角 <span className="font-bold">「添加」</span></p>
-        </div>
-      )}
-
-      {(browser === 'firefox' || browser === 'other') && !isIOS && (
-        <div className="bg-pink-50 rounded-xl p-3 text-sm text-gray-600 space-y-2">
-          <p className="text-pink-600 font-medium">当前浏览器可能不支持安装</p>
-          <p>推荐安装 <span className="font-bold">Chrome（谷歌浏览器）</span></p>
-          <p>打开后访问：</p>
-          <p className="text-xs text-pink-500 break-all font-mono">simplestar666.github.io/xiao-daka/</p>
-          <p className="text-xs text-gray-400 mt-1">Chrome 地址栏右侧会出现 ⊕ 安装按钮</p>
+          <p className="text-green-600 font-medium">✅ Safari 支持！</p>
+          <p>1️⃣ 点击底部 <span className="font-bold">⬆️ 分享按钮</span></p>
+          <p>2️⃣ 滑动找到 <span className="font-bold">「添加到主屏幕」</span></p>
+          <p>3️⃣ 点击右上角 <span className="font-bold">「添加」</span></p>
         </div>
       )}
 

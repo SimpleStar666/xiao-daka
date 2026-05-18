@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">小打卡</string>
+    <string name="title_activity_main">小打卡</string>
+    <string name="package_name">com.xiaodaka.app</string>
+    <string name="custom_url_scheme">com.xiaodaka.app</string>
+</resources>
