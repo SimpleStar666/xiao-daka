@@ -5,6 +5,7 @@ import { traeBadgePlugin } from 'vite-plugin-trae-solo-badge';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  base: '/xiao-daka/',
   build: {
     sourcemap: 'hidden',
   },
@@ -37,8 +38,8 @@ export default defineConfig({
         background_color: '#FFF5F5',
         display: 'standalone',
         orientation: 'portrait',
-        scope: '/',
-        start_url: '/',
+        scope: '/xiao-daka/',
+        start_url: '/xiao-daka/',
         icons: [
           {
             src: 'pwa-192x192.png',
