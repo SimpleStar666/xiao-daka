@@ -47,14 +47,8 @@ jobs:
           name: app-debug
           path: android/app/build/outputs/apk/debug/app-debug.apk
 
-      - name: Upload APK to release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: android-latest
-          name: Android APK Latest
-          files: android/app/build/outputs/apk/debug/app-debug.apk
-          body: |
-            最新版小打卡 Android APK
-            构建时间: ${{ github.event.head_commit.timestamp }}
+      - name: Upload APK to existing release
+        run: |
+          gh release upload android-latest android/app/build/outputs/apk/debug/app-debug.apk --clobber
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
