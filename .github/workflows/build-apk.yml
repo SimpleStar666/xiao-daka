@@ -47,8 +47,38 @@ jobs:
           name: app-debug
           path: android/app/build/outputs/apk/debug/app-debug.apk
 
-      - name: Upload APK to existing release
+      - name: Upload APK to release via API
         run: |
-          gh release upload android-latest android/app/build/outputs/apk/debug/app-debug.apk --clobber
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APK_PATH="android/app/build/outputs/apk/debug/app-debug.apk"
+          APK_NAME="app-debug.apk"
+          RELEASE_TAG="android-latest"
+          
+          # Get the release upload URL
+          RELEASE_DATA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/tags/${RELEASE_TAG}")
+          
+          UPLOAD_URL=$(echo "$RELEASE_DATA" | grep -o '"upload_url": "[^"]*' | cut -d'"' -f4)
+          UPLOAD_URL="${UPLOAD_URL%{?name,label}}"
+          
+          if [ -z "$UPLOAD_URL" ]; then
+            echo "Release not found, creating new release..."
+            RELEASE_DATA=$(curl -s -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              -d "{\"tag_name\":\"${RELEASE_TAG}\",\"name\":\"Android APK Latest\",\"body\":\"最新版小打卡 Android APK\"}" \
+              "https://api.github.com/repos/${{ github.repository }}/releases")
+            UPLOAD_URL=$(echo "$RELEASE_DATA" | grep -o '"upload_url": "[^"]*' | cut -d'"' -f4)
+            UPLOAD_URL="${UPLOAD_URL%{?name,label}}"
+          fi
+          
+          # Delete existing asset if exists
+          ASSET_ID=$(echo "$RELEASE_DATA" | grep -B2 "\"name\": \"${APK_NAME}\"" | grep '"id":' | head -1 | grep -o '[0-9]*')
+          if [ -n "$ASSET_ID" ]; then
+            curl -s -X DELETE -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/${{ github.repository }}/releases/assets/${ASSET_ID}"
+          fi
+          
+          # Upload new asset
+          curl -s -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/vnd.android.package-archive" \
+            --data-binary "@${APK_PATH}" \
+            "${UPLOAD_URL}?name=${APK_NAME}"
