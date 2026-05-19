@@ -39,7 +39,9 @@ export default function InstallPrompt() {
   useEffect(() => {
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches
       || (window.navigator as unknown as { standalone?: boolean }).standalone === true;
-    if (isStandalone) return;
+    const isCapacitor = !!(window as unknown as { Capacitor?: unknown }).Capacitor
+      || /Capacitor/i.test(navigator.userAgent);
+    if (isStandalone || isCapacitor) return;
 
     const handler = (e: Event) => {
       e.preventDefault();

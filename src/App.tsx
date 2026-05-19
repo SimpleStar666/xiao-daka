@@ -9,7 +9,7 @@ export default function App() {
   return (
     <Router>
       <div className="min-h-screen bg-gradient-to-b from-[#FFF5F5] via-[#FFF8F0] to-[#FFF5F5]">
-        <div className="max-w-lg mx-auto px-5 pt-6">
+        <div className="max-w-lg mx-auto px-4" style={{ paddingTop: 'max(1.5rem, env(safe-area-inset-top))' }}>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/tasks" element={<Tasks />} />

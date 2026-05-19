@@ -20,7 +20,9 @@ function InstallBanner() {
   useEffect(() => {
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches
       || (window.navigator as unknown as { standalone?: boolean }).standalone === true;
-    if (isStandalone) return;
+    const isCapacitor = !!(window as unknown as { Capacitor?: unknown }).Capacitor
+      || /Capacitor/i.test(navigator.userAgent);
+    if (isStandalone || isCapacitor) return;
 
     const ua = navigator.userAgent.toLowerCase();
     const isMobile = /iphone|ipad|ipod|android/.test(ua);
@@ -136,33 +138,33 @@ export default function Dashboard() {
 
       <InstallBanner />
 
-      <div className="grid grid-cols-3 gap-3 mb-5">
-        <div className="col-span-1 flex justify-center">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="shrink-0">
           <ProgressRing rate={rate} />
         </div>
-        <div className="col-span-2 flex flex-col gap-3">
-          <div className="bg-white rounded-2xl p-3 shadow-sm border border-pink-50 flex-1 flex items-center justify-center">
-            <div className="text-center">
-              <Flame size={20} className="mx-auto text-amber-400 mb-0.5" />
-              <p className="text-xl font-bold text-amber-500">{streak}</p>
-              <p className="text-xs text-amber-400">连续打卡</p>
+        <div className="flex-1 flex gap-2">
+          <div className="flex-1 bg-white rounded-2xl p-2.5 shadow-sm border border-pink-50 flex items-center gap-2">
+            <Flame size={18} className="text-amber-400 shrink-0" />
+            <div>
+              <p className="text-lg font-bold text-amber-500 leading-tight">{streak}</p>
+              <p className="text-[10px] text-amber-400">连续打卡</p>
             </div>
           </div>
-          <div className="bg-white rounded-2xl p-3 shadow-sm border border-pink-50 flex-1 flex items-center justify-center">
-            <div className="text-center">
-              <span className="text-xl">⭐</span>
-              <p className="text-xl font-bold text-pink-500">{totalCheckins}</p>
-              <p className="text-xs text-pink-400">总打卡数</p>
+          <div className="flex-1 bg-white rounded-2xl p-2.5 shadow-sm border border-pink-50 flex items-center gap-2">
+            <span className="text-lg shrink-0">⭐</span>
+            <div>
+              <p className="text-lg font-bold text-pink-500 leading-tight">{totalCheckins}</p>
+              <p className="text-[10px] text-pink-400">总打卡</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="mb-5">
+      <div className="mb-4">
         <DailyQuote />
       </div>
 
-      <div className="flex gap-2 mb-5 overflow-x-auto pb-1">
+      <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
         <button
           onClick={() => setShowBadges(!showBadges)}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white text-pink-500 text-xs font-medium shadow-sm border border-pink-50 hover:bg-pink-50 transition-colors active:scale-95 whitespace-nowrap"

@@ -6,7 +6,7 @@ interface ProgressRingProps {
   strokeWidth?: number;
 }
 
-export default function ProgressRing({ rate, size = 120, strokeWidth = 10 }: ProgressRingProps) {
+export default function ProgressRing({ rate, size = 90, strokeWidth = 8 }: ProgressRingProps) {
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
   const offset = circumference - (rate / 100) * circumference;
@@ -43,8 +43,8 @@ export default function ProgressRing({ rate, size = 120, strokeWidth = 10 }: Pro
         </defs>
       </svg>
       <div className="absolute flex flex-col items-center">
-        <span className="text-2xl font-bold text-pink-600">{rate}%</span>
-        <span className="text-xs text-pink-400">完成率</span>
+        <span className="text-lg font-bold text-pink-600">{rate}%</span>
+        <span className="text-[10px] text-pink-400">完成率</span>
       </div>
     </div>
   );
