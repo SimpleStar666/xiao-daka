@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Check } from 'lucide-react';
+import { Check, CheckCircle2 } from 'lucide-react';
 import type { Task } from '@/types';
 import { useCheckinStore } from '@/stores/checkinStore';
 import { todayStr, getCategoryInfo } from '@/utils/reports';
@@ -24,7 +24,7 @@ export default function TaskItem({ task, showActions, onEdit, onDelete }: TaskIt
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      className={`flex items-center gap-3 p-4 rounded-2xl transition-all duration-200 ${
+      className={`flex items-center gap-3 p-3 rounded-2xl transition-all duration-200 ${
         completed ? 'bg-pink-50/60' : 'bg-white'
       } shadow-sm hover:shadow-md border border-pink-50`}
     >
@@ -57,6 +57,18 @@ export default function TaskItem({ task, showActions, onEdit, onDelete }: TaskIt
           </span>
         </div>
       </div>
+
+      <button
+        onClick={() => toggleCheckIn(task.id)}
+        className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-medium transition-all duration-200 active:scale-95 ${
+          completed
+            ? 'bg-pink-100 text-pink-500'
+            : 'bg-gradient-to-r from-[#FFB5C2] to-[#FF8FA3] text-white shadow-sm'
+        }`}
+      >
+        <CheckCircle2 size={16} className="inline-block -mt-0.5 mr-0.5" />
+        {completed ? '已打卡' : '打卡'}
+      </button>
 
       {showActions && onEdit && onDelete && (
         <div className="flex gap-1 flex-shrink-0">

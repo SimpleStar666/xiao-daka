@@ -6,7 +6,7 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
-const APK_URL = 'https://github.com/SimpleStar666/xiao-daka/releases/download/android-latest/app-debug.apk';
+const APK_URL = 'https://github.com/SimpleStar666/xiao-daka/releases/download/android-latest/xiao-daka.apk';
 
 function detectBrowser() {
   const ua = navigator.userAgent;
