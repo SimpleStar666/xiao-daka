@@ -4,7 +4,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
-  base: process.env.APP_BASE || '/xiao-daka/',
+  base: process.env.APP_BASE || './',
   build: {
     sourcemap: 'hidden',
   },
