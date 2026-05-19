@@ -58,17 +58,19 @@ export default function TaskItem({ task, showActions, onEdit, onDelete }: TaskIt
         </div>
       </div>
 
-      <button
-        onClick={() => toggleCheckIn(task.id)}
-        className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-medium transition-all duration-200 active:scale-95 ${
-          completed
-            ? 'bg-pink-100 text-pink-500'
-            : 'bg-gradient-to-r from-[#FFB5C2] to-[#FF8FA3] text-white shadow-sm'
-        }`}
-      >
-        <CheckCircle2 size={16} className="inline-block -mt-0.5 mr-0.5" />
-        {completed ? '已打卡' : '打卡'}
-      </button>
+      {!showActions && (
+        <button
+          onClick={() => toggleCheckIn(task.id)}
+          className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-medium transition-all duration-200 active:scale-95 ${
+            completed
+              ? 'bg-pink-100 text-pink-500'
+              : 'bg-gradient-to-r from-[#FFB5C2] to-[#FF8FA3] text-white shadow-sm'
+          }`}
+        >
+          <CheckCircle2 size={16} className="inline-block -mt-0.5 mr-0.5" />
+          {completed ? '已打卡' : '打卡'}
+        </button>
+      )}
 
       {showActions && onEdit && onDelete && (
         <div className="flex gap-1 flex-shrink-0">
